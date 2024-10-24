@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>RAG Application</title>
+</head>
+<body>
+<h3>Upload Document</h3>
+<form id="uploadForm">
+    <input type="file" name="file" required /><br /><br />
+    <button type="submit">Upload</button>
+</form>
+<div><span>OR</span></div>
+<h3>Inbank Confluence Page Id to index</h3>
+<form id="confluenceForm">
+    <input type="text" name="confluence" required /><br /><br />
+    <button type="submit">Index Page</button>
+</form>
+
+<h1>Ask a Question</h1>
+<form id="questionForm">
+    <input type="text" name="question" required /><br /><br />
+    <button type="submit">Ask</button>
+</form>
+
+<h2>Answer:</h2>
+<div id="answer"></div>
+
+<script>
+    const uploadForm = document.getElementById('uploadForm');
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fileInput = uploadForm.querySelector('input[name="file"]');
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        try {
+            const response = await fetch('http://localhost:3001/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('File upload failed.');
+            }
+
+            alert('File uploaded and processed.');
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    const confluenceForm = document.getElementById('confluenceForm');
+    confluenceForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const confluencePage = confluenceForm.querySelector('input[name="confluence"]').value;
+        try {
+            const response = await fetch(`http://localhost:3001/confluence?pageId=${confluencePage}`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error('Confluence page processing failed.');
+            }
+
+            alert('Confluence page processed.');
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    const questionForm = document.getElementById('questionForm');
+    questionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const questionInput = questionForm.querySelector('input[name="question"]').value;
+        try {
+            const response = await fetch('http://localhost:3001/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: questionInput }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'An error occurred.');
+            }
+
+            document.getElementById('answer').innerText = data.answer;
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+</script>
+</body>
+</html>
