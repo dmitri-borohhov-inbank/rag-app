@@ -11,10 +11,10 @@ This is a Retrieval-Augmented Generation (RAG) application that integrates with 
 
 ## Prerequisites
 
-- Node.js (version >= 14.x)
+- Node.js
 - TypeScript
 - A Confluence account with API access
-- A personal access token for Confluence API
+- A personal access token for Confluence API and OpenAI
 
 ## Getting Started
 
